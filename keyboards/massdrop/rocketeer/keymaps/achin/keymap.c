@@ -241,7 +241,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
 }
 
-void rgb_matrix_init_user(void) {
+void keyboard_post_init_user(void) {
     led_lighting_mode = LED_MODE_INDICATORS_ONLY; //Start Rocketeer with only indicator lights
 }
 
