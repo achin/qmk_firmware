@@ -17,7 +17,6 @@ enum rocketeer_keycodes {
     L_T_BR,             //LED Toggle Breath Effect
     L_T_PTD,            //LED Toggle Scrolling Pattern Direction and effect
     U_T_AGCR,           //USB Toggle Automatic GCR control
-    S_ESC,              //Shift+Esc/`/~
     DBG_TOG,            //DEBUG Toggle On / Off
     DBG_MTRX,           //DEBUG Toggle Matrix Prints
     DBG_KBD,            //DEBUG Toggle Keyboard Prints
@@ -38,7 +37,7 @@ keymap_config_t keymap_config;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BL] = LAYOUT(
-        S_ESC,   KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC, \
+        KC_GESC, KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC, \
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS, \
         KC_LCTL, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,  \
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,                   KC_RSFT, \
@@ -84,7 +83,6 @@ void matrix_scan_user(void) {
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     static uint32_t key_timer;
     static uint8_t scroll_effect = 0;
-    static uint8_t shift_esc_shift_mask;
 
     switch (keycode) {
         case L_BRI:
@@ -209,26 +207,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case U_T_AGCR:
             if (record->event.pressed && MODS_SHIFT && MODS_CTRL) {
                 TOGGLE_FLAG_AND_PRINT(usb_gcr_auto, "USB GCR auto mode");
-            }
-            return false;
-        case S_ESC:
-            shift_esc_shift_mask = get_mods()&MODS_CTRL_MASK;
-            if (record->event.pressed) {
-                if (shift_esc_shift_mask) {
-                    add_key(KC_GRV);
-                    send_keyboard_report();
-                } else {
-                    add_key(KC_ESC);
-                    send_keyboard_report();
-                }
-            } else {
-                if (shift_esc_shift_mask) {
-                    del_key(KC_GRV);
-                    send_keyboard_report();
-                } else {
-                    del_key(KC_ESC);
-                    send_keyboard_report();
-                }
             }
             return false;
         case DBG_FAC:
