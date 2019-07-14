@@ -68,12 +68,32 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     */
 };
 
+static uint32_t start_time;
+static uint8_t flipped = 0;
+
 // Runs just one time when the keyboard initializes.
 void matrix_init_user(void) {
 };
 
+void keyboard_post_init_user(void) {
+    start_time = timer_read32();
+
+    led_lighting_mode = LED_MODE_NORMAL;
+    led_animation_id = 7; //led_programs.c led_setups leds_white index
+    led_animation_breathing = 1;
+    gcr_breathe = gcr_desired;
+    led_animation_breathe_cur = BREATHE_MIN_STEP;
+    breathe_dir = 1;
+}
+
+
 // Runs constantly in the background, in a loop.
 void matrix_scan_user(void) {
+    if (!flipped && timer_elapsed32(start_time) > 6000) {
+        led_animation_breathing = 0;
+        led_lighting_mode = LED_MODE_INDICATORS_ONLY;
+        flipped = 1;
+    }
 };
 
 #define MODS_SHIFT (get_mods() & MOD_BIT(KC_LSHIFT) || get_mods() & MOD_BIT(KC_RSHIFT))
@@ -252,11 +272,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         default:
             return true; //Process all other keycodes normally
     }
-}
-
-void keyboard_post_init_user(void) {
-    led_lighting_mode = LED_MODE_INDICATORS_ONLY;
-    led_animation_id = 7; //led_programs.c led_setups leds_white index
 }
 
 led_instruction_t led_instructions[] = {
